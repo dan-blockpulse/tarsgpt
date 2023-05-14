@@ -108,6 +108,8 @@
   font-weight: 400;
   font-size: 16px;
   line-height: 20px;
+
+  max-width: 980px;
 }
 
 .contractRightSubsection {
@@ -129,6 +131,8 @@
   font-weight: 400;
   font-size: 16px;
   line-height: 20px;
+
+  width: 100%;
 }
 
 .sectionTitle {
@@ -189,4 +193,45 @@
 .codeSection {
   align-items: flex-start !important;
   padding-top: 1rem;
+}
+
+.ratioContainer {
+  position: relative;
+  width: 180px;
+  height: 6px;
+  background: rgba(217, 217, 217, 0.59);
+  border-radius: 10px;
+}
+
+.ratioBar {
+  position: absolute;
+  height: 100%;
+  background-color: #e43838;
+  border-radius: 10px;
+}
+
+.method {
+  font-family: "Courier";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  color: #ffffff;
+}
+
+.tokenIcon {
+  width: 32px;
+}
+
+.tokenValue {
+  /* font-family: "Courier New", Courier, monospace; */
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.fiatValue {
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 12px;
+  color: rgba(217, 217, 217, 0.59);
 }

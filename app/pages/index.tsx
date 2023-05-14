@@ -1,32 +1,46 @@
-import { HStack, VStack, Text, Code, Box } from "@chakra-ui/react";
+import { HStack, VStack, Text, Box } from "@chakra-ui/react";
 import styles from "@styles/Main.module.css";
 import { CopyIcon } from "@chakra-ui/icons";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { contractInteraction, contractSummary } from "@data/sample";
+import {
+  abi,
+  interaction,
+  metadata,
+  methodMap,
+  methods,
+  summary,
+  tokenBalances,
+} from "@data/sample";
 import Highlight from "react-highlight";
-import { useToast } from "@chakra-ui/react";
+import { useToast, Link as ChakraLink, Image } from "@chakra-ui/react";
+
+const CONTRACT_ADDRESS = "TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR";
 
 export default function Main() {
   const toast = useToast();
 
+  const copyToClipboard = async (
+    text: string,
+    title: string,
+    description: string
+  ) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title,
+        description,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+    }
+  };
+
   const formatCode = (response: string) => {
     const codeBlockRegex = /(\d+\.)([\s\S]*?)```(?:javascript)?([\s\S]*?)```/g;
     const codeBlocks: JSX.Element[] = [];
-
-    const copyToClipboard = async (text: string) => {
-      try {
-        await navigator.clipboard.writeText(text);
-        toast({
-          title: "Code snippet copied.",
-          description: "Successfully copied to your clipboard.",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      } catch (err) {
-        console.error("Failed to copy text: ", err);
-      }
-    };
 
     let match;
     let lastIndex = 0;
@@ -50,7 +64,13 @@ export default function Main() {
                 </HStack>
                 <CopyIcon
                   className={styles.icon}
-                  onClick={() => copyToClipboard(codeContent)}
+                  onClick={() =>
+                    copyToClipboard(
+                      codeContent,
+                      "Code snippet copied.",
+                      "Successfully copied to your clipboard."
+                    )
+                  }
                 />
               </HStack>
               <Highlight className="javascript">{codeContent}</Highlight>
@@ -80,17 +100,31 @@ export default function Main() {
             TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR
           </Text>
           <VStack className={styles.iconContainer}>
-            <CopyIcon className={styles.icon} />
+            <CopyIcon
+              className={styles.icon}
+              onClick={() =>
+                copyToClipboard(
+                  "TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR",
+                  "Address copied.",
+                  "Successfully copied to your clipboard."
+                )
+              }
+            />
           </VStack>
-          <VStack className={styles.iconContainer}>
-            <ExternalLinkIcon className={styles.icon} />
-          </VStack>
+          <ChakraLink
+            href={`https://tronscan.org/#/contract/${CONTRACT_ADDRESS}`}
+            isExternal
+          >
+            <VStack className={styles.iconContainer}>
+              <ExternalLinkIcon className={styles.icon} />
+            </VStack>
+          </ChakraLink>
         </HStack>
         <HStack w="100%" gap={1} alignItems="flex-start">
           <VStack w="70%" gap={1}>
             <VStack className={styles.contractLeftSubsection}>
               <Text className={styles.sectionTitle}>Contract Summary</Text>
-              {contractSummary.split("\n").map((line, index) => (
+              {summary.split("\n").map((line, index) => (
                 <Text key={index}>{line}</Text>
               ))}
             </VStack>
@@ -98,32 +132,89 @@ export default function Main() {
               <Text className={styles.sectionTitle}>
                 Contract Interactions via TronWeb
               </Text>
-              {formatCode(contractInteraction)}
+              {formatCode(interaction)}
             </VStack>
           </VStack>
           <VStack w="30%" gap={1}>
             <VStack className={styles.contractRightSubsection}>
               <Text className={styles.sectionTitle}>Contract Info</Text>
-              <Text>
-                Total assets: 18,245,357,121.400803 TRX Historical Transaction
-                Count: 98,541 Created on: 2020-04-03 03:53:42 (Local) Creator
-                address: TG6jUMfwpwR9QNFsSwCGtLaV2TR2gV8yru
-              </Text>
+              <HStack>
+                <Text>· Total assets: </Text>
+                <Text>{metadata.totalAssets} TRX</Text>
+              </HStack>
+              <HStack>
+                <Text>· Transaction count: </Text>
+                <Text>{metadata.txnCount} transactions</Text>
+              </HStack>
+              <HStack>
+                <Text>· Created on: </Text>
+                <Text>{metadata.createdOn}</Text>
+              </HStack>
+              <HStack>
+                <Text>· Creator : </Text>
+                <Text>{metadata.creator}</Text>
+              </HStack>
             </VStack>
             <VStack className={styles.contractRightSubsection}>
-              <Text className={styles.sectionTitle}>Contract Call Summary</Text>
-              <Text>
-                Top 5 Methods Withdraw Deposit Approve Transfer TransferFrom
-              </Text>
+              <Text className={styles.sectionTitle}>Token Balances</Text>
+              {tokenBalances.map(({ name, value, fiatValue, imageUrl }) => (
+                <HStack w="100%" justifyContent="space-between" key={name}>
+                  <HStack>
+                    <Image
+                      src={imageUrl}
+                      alt="token icon"
+                      className={styles.tokenIcon}
+                    />
+                    <Text>{name}</Text>
+                  </HStack>
+                  <VStack alignItems="flex-end">
+                    <Text className={styles.tokenValue}>
+                      {value.toFixed(2)}
+                    </Text>
+                    <Text className={styles.fiatValue}>${fiatValue}</Text>
+                  </VStack>
+                </HStack>
+              ))}
             </VStack>
             <VStack className={styles.contractRightSubsection}>
-              <Text className={styles.sectionTitle}>Contract Methods</Text>
-              <Text>
-                increaseAllowance(address,uint256)
-                transferFrom(address,address,uint256) balanceOf(address)
-                transfer(address,uint256) totalSupply() symbol()
-                allowance(address,address)
-              </Text>
+              <Text className={styles.sectionTitle}>Contract Calls</Text>
+              <Text fontWeight={600}>Top 5 Methods</Text>
+              {methods.map(({ name, percentage }, idx) => (
+                <HStack
+                  key={`method-${idx}`}
+                  w="100%"
+                  justifyContent="flex-start !important"
+                >
+                  <Text w="100px">{name}</Text>
+                  <Box className={styles.ratioContainer}>
+                    <Box
+                      className={styles.ratioBar}
+                      width={`${percentage}%`}
+                    ></Box>
+                  </Box>
+                  <Text pl="10px">{percentage}%</Text>
+                </HStack>
+              ))}
+            </VStack>
+            <VStack className={styles.contractRightSubsection}>
+              <HStack w="100%" justifyContent="space-between">
+                <Text className={styles.sectionTitle}>Contract Methods</Text>
+                <CopyIcon
+                  className={styles.icon}
+                  onClick={() =>
+                    copyToClipboard(
+                      JSON.stringify(abi),
+                      "Contract ABI copied.",
+                      "Successfully copied to your clipboard."
+                    )
+                  }
+                />
+              </HStack>
+              {Object.values(methodMap).map((method: string, idx) => (
+                <Text key={idx} className={styles.method}>
+                  {idx + 1}. {method}
+                </Text>
+              ))}
             </VStack>
           </VStack>
         </HStack>
