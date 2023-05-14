@@ -58,6 +58,7 @@
   font-size: 24px;
   line-height: 30px;
   padding: 0 20px;
+  font-family: "Jost";
 }
 
 .searchInput:focus {
@@ -74,4 +75,18 @@
 
 .rightSection {
   width: 140px;
+  align-items: flex-end !important;
+}
+
+.icon {
+  color: white !important;
+  opacity: 0.7;
+  transition: all 0.3s;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.icon:hover {
+  opacity: 1;
+  z-index: 2;
 }

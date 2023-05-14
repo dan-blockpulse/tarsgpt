@@ -1,17 +1,26 @@
 import Link from "next/link";
 import styles from "@styles/Navbar.module.css";
-import { Box, HStack, Image, Input } from "@chakra-ui/react";
+import { HStack, Image, Input, VStack } from "@chakra-ui/react";
+import { InfoIcon, Search2Icon } from "@chakra-ui/icons";
+import { useState } from "react";
 import { useRouter } from "next/router";
-import { Search2Icon } from "@chakra-ui/icons";
-
-type SearchBarProps = {
-  handleInputChange?: (e: any) => void;
-  handleNavigation?: (e: any) => void;
-};
 
 const Navbar = () => {
-  const roukter = useRouter();
+  const [inputValue, setInputValue] = useState("");
+  const router = useRouter();
 
+  function handleInputChange(e: any) {
+    setInputValue(e.target.value);
+  }
+  function handleNavigation(e: any) {
+    e.preventDefault();
+    if (!validateTronAddress(inputValue)) return;
+    router.push(`/contract/${inputValue}`);
+  }
+
+  function validateTronAddress(address: string): boolean {
+    return address.startsWith("T") && address.length === 34;
+  }
   return (
     <HStack className={styles.navbar}>
       <Link href="/">
@@ -24,16 +33,18 @@ const Navbar = () => {
       </Link>
       <HStack className={styles.searchbar}>
         <Search2Icon color="white" />
-        <form onSubmit={() => {}} style={{ width: "100%" }}>
+        <form onSubmit={handleNavigation} style={{ width: "100%" }}>
           <Input
             className={styles.searchInput}
             placeholder={"Search contract by address"}
-            onSubmit={() => {}}
-            onChange={() => {}}
+            onSubmit={handleNavigation}
+            onChange={handleInputChange}
           />
         </form>
       </HStack>
-      <Box className={styles.rightSection} />
+      <VStack className={styles.rightSection}>
+        <InfoIcon className={styles.icon} />
+      </VStack>
     </HStack>
   );
 };

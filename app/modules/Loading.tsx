@@ -1,0 +1,31 @@
+import { VStack, Text } from "@chakra-ui/react";
+import styles from "@styles/Main.module.css";
+import Hero from "@modules/Hero";
+import LoadingLottie from "./LoadingLottie";
+import { useEffect, useState } from "react";
+
+export default function Loading() {
+  const [message, setMessage] = useState("Fetching contract information");
+
+  useEffect(() => {
+    const timers = [
+      setTimeout(() => setMessage("Transferring data to GPT"), 10000),
+      setTimeout(() => setMessage("Awaiting response from GPT"), 15000),
+      setTimeout(() => setMessage("Processing response from GPT"), 25000),
+    ];
+
+    return () => {
+      timers.forEach((timer) => clearTimeout(timer));
+    };
+  }, []);
+
+  return (
+    <VStack>
+      <main className={styles.main}>
+        <LoadingLottie />
+        <Text className={styles.loadingText}>{message}</Text>
+      </main>
+      <Hero />
+    </VStack>
+  );
+}

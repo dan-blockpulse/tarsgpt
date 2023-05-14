@@ -1,12 +1,12 @@
 .main {
   min-height: 100vh;
-  padding: 4rem 2rem 0 2rem;
+  padding: 4rem 2rem 2rem 2rem;
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  overflow: scroll;
   position: relative;
   z-index: 1;
   width: 100%;
@@ -224,7 +224,6 @@
 }
 
 .tokenValue {
-  /* font-family: "Courier New", Courier, monospace; */
   font-weight: 400;
   font-size: 14px;
 }
@@ -234,4 +233,70 @@
   padding: 0 !important;
   font-size: 12px;
   color: rgba(217, 217, 217, 0.59);
+}
+
+.hero {
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.05;
+}
+
+.heroContainer {
+  position: absolute;
+  width: 1000px;
+  height: 1000px;
+  left: -150px;
+  top: 100px;
+  z-index: 0;
+}
+
+.searchbar {
+  box-sizing: border-box;
+  width: 40%;
+  height: 45px;
+  background: #040416 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 15px;
+  padding: 0 1.5rem;
+}
+
+.searchInput {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  background: transparent !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-size: 24px;
+  line-height: 30px;
+  padding: 0 20px;
+  font-family: "Jost";
+}
+
+.searchInput:focus {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.searchInput:focus-visible {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.logo {
+  width: 400px;
+}
+
+.loadingText {
+  font-family: "Kanit";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 30px;
+
+  color: #ffffff;
 }
