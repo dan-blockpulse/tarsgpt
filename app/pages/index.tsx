@@ -1,12 +1,77 @@
-import { HStack, VStack, Text } from "@chakra-ui/react";
+import { HStack, VStack, Text, Code, Box } from "@chakra-ui/react";
 import styles from "@styles/Main.module.css";
 import { CopyIcon } from "@chakra-ui/icons";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { contractInteraction, contractSummary } from "@data/sample";
+import Highlight from "react-highlight";
+import { useToast } from "@chakra-ui/react";
 
 export default function Main() {
+  const toast = useToast();
+
+  const formatCode = (response: string) => {
+    const codeBlockRegex = /(\d+\.)([\s\S]*?)```(?:javascript)?([\s\S]*?)```/g;
+    const codeBlocks: JSX.Element[] = [];
+
+    const copyToClipboard = async (text: string) => {
+      try {
+        await navigator.clipboard.writeText(text);
+        toast({
+          title: "Code snippet copied.",
+          description: "Successfully copied to your clipboard.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      } catch (err) {
+        console.error("Failed to copy text: ", err);
+      }
+    };
+
+    let match;
+    let lastIndex = 0;
+
+    while ((match = codeBlockRegex.exec(response)) !== null) {
+      const stepNumber = match[1];
+      const stepDescription = match[2];
+      const codeContent = match[3];
+      const codeEnd = codeBlockRegex.lastIndex;
+
+      codeBlocks.push(
+        <VStack key={lastIndex} className={styles.codeSection}>
+          <Text>{`${stepNumber} ${stepDescription}`}</Text>
+          <VStack className={styles.codeBackground}>
+            <VStack className={styles.codeContainer}>
+              <HStack w="100%" justifyContent="space-between">
+                <HStack zIndex={2}>
+                  <Box className={styles.redDot} />
+                  <Box className={styles.yellowDot} />
+                  <Box className={styles.greenDot} />
+                </HStack>
+                <CopyIcon
+                  className={styles.icon}
+                  onClick={() => copyToClipboard(codeContent)}
+                />
+              </HStack>
+              <Highlight className="javascript">{codeContent}</Highlight>
+            </VStack>
+          </VStack>
+        </VStack>
+      );
+
+      lastIndex = codeEnd;
+    }
+
+    if (lastIndex < response.length) {
+      codeBlocks.push(<Text key={lastIndex}>{response.slice(lastIndex)}</Text>);
+    }
+
+    return codeBlocks;
+  };
+
   return (
     <main className={styles.main}>
-      <VStack w="100%">
+      <VStack w="100%" alignItems="flex-start">
         <HStack w="100%" paddingTop="1.5rem" paddingBottom=".5rem">
           <VStack className={styles.contractName}>
             <Text>WTRX</Text>
@@ -25,36 +90,15 @@ export default function Main() {
           <VStack w="70%" gap={1}>
             <VStack className={styles.contractLeftSubsection}>
               <Text className={styles.sectionTitle}>Contract Summary</Text>
-              <Text>
-                This is a smart contract that allows users to deposit and
-                withdraw TRX, the native cryptocurrency of the Tron blockchain,
-                in the form of a TRC20 token called WTRX. TRC20 is a technical
-                standard for tokens on the Tron blockchain, and this smart
-                contract implements that standard. The "token_deposit.sol" file
-                defines an interface for depositing and withdrawing tokens,
-                while the "trc20.sol" file provides the implementation of the
-                TRC20 standard. The "wtrx.sol" file creates the WTRX token by
-                implementing the ITokenDeposit interface and the TRC20 standard.
-                It defines the properties of the token, including its name,
-                symbol, and number of decimals, and allows users to deposit and
-                withdraw TRX in exchange for WTRX tokens. This smart contract is
-                useful to Tron blockchain users who want to use TRX in a
-                decentralized manner, as it allows them to convert TRX into a
-                TRC20 token that can be traded on decentralized exchanges and
-                used in other decentralized applications. Users can deposit
-                their TRX into the smart contract, receive WTRX tokens in
-                exchange, and then trade those tokens on decentralized exchanges
-                or use them in other applications. They can also withdraw their
-                TRX by exchanging their WTRX tokens for the equivalent amount of
-                TRX.
-              </Text>
+              {contractSummary.split("\n").map((line, index) => (
+                <Text key={index}>{line}</Text>
+              ))}
             </VStack>
             <VStack className={styles.contractLeftSubsection}>
               <Text className={styles.sectionTitle}>
                 Contract Interactions via TronWeb
               </Text>
-              <Text>1. Deposit WTRX tokens to the contract</Text>
-              <Text>{`const contractAddress = "CONTRACT_ADDRESS";const tronWeb = new TronWeb(fullNode, solidityNode, eventServer, privateKey);const contract = await tronWeb.contract(abi, contractAddress);const depositAmount = '1000000'; // 1 TRX = 1,000,000 SUN (smallest TRX unit)const transaction = await contract.deposit().send({  callValue: depositAmount,  shouldPollResponse:true});`}</Text>
+              {formatCode(contractInteraction)}
             </VStack>
           </VStack>
           <VStack w="30%" gap={1}>

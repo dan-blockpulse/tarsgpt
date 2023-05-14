@@ -7,7 +7,6 @@ body {
   background-color: #040416 !important;
   color: white;
   font-family: "Inter";
-  overflow: hidden;
 }
 
 a {
@@ -17,4 +16,9 @@ a {
 
 * {
   box-sizing: border-box;
+}
+
+.hljs {
+  margin-top: -1rem !important;
+  width: 850px !important;
 }
