@@ -10,6 +10,7 @@ import {
   methods,
   summary,
   tokenBalances,
+  wagmi,
 } from "@data/sample";
 import Highlight from "react-highlight";
 import { useToast, Link as ChakraLink, Image } from "@chakra-ui/react";
@@ -17,6 +18,7 @@ import { useRouter } from "next/router";
 import Navbar from "@modules/Navbar";
 import { useEffect, useState } from "react";
 import Loading from "@modules/Loading";
+import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 
 export default function Main() {
   const toast = useToast();
@@ -123,7 +125,7 @@ export default function Main() {
                 className={styles.icon}
                 onClick={() =>
                   copyToClipboard(
-                    "TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR",
+                    address as string,
                     "Address copied.",
                     "Successfully copied to your clipboard."
                   )
@@ -131,7 +133,7 @@ export default function Main() {
               />
             </VStack>
             <ChakraLink
-              href={`https://tronscan.org/#/contract/${address}`}
+              href={`https://bscscan.com/address/${address}#code`}
               isExternal
             >
               <VStack className={styles.iconContainer}>
@@ -147,12 +149,34 @@ export default function Main() {
                   <Text key={index}>{line}</Text>
                 ))}
               </VStack>
-              <VStack className={styles.contractLeftSubsection}>
+              <VStack className={styles.contractSubsection}>
+                <VStack className={styles.sectionTitleContainer}>
+                  <Text className={styles.sectionTitle}>
+                    Contract Interactions
+                  </Text>
+                </VStack>
+                <Tabs
+                  width="102%"
+                  variant="custom"
+                  paddingLeft="1rem"
+                  paddingRight="1rem"
+                >
+                  <TabList>
+                    <Tab w="100%">Ethers.js</Tab>
+                    <Tab w="100%">wagmi.sh</Tab>
+                  </TabList>
+                  <TabPanels>
+                    <TabPanel>{formatCode(interaction)}</TabPanel>
+                    <TabPanel>{formatCode(wagmi)}</TabPanel>
+                  </TabPanels>
+                </Tabs>
+              </VStack>
+              {/* <VStack className={styles.contractLeftSubsection}>
                 <Text className={styles.sectionTitle}>
-                  Contract Interactions via TronWeb
+                  Contract Interactions via Ethers.js
                 </Text>
                 {formatCode(interaction)}
-              </VStack>
+              </VStack> */}
             </VStack>
             <VStack w="30%" gap={1}>
               <VStack className={styles.contractRightSubsection}>

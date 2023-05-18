@@ -15,12 +15,7 @@ export default function Main() {
 
   function handleNavigation(e: any) {
     e.preventDefault();
-    if (!validateTronAddress(inputValue)) return;
     router.push(`/contract/${inputValue}`);
-  }
-
-  function validateTronAddress(address: string): boolean {
-    return address.startsWith("T") && address.length === 34;
   }
 
   return (
@@ -28,7 +23,7 @@ export default function Main() {
       <main className={styles.main}>
         <VStack w="100%">
           <Image
-            src="/logo-1.png"
+            src="/logo.png"
             alt="Logo"
             cursor="pointer"
             className={styles.logo}

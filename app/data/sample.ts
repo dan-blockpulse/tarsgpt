@@ -1,15 +1,18 @@
 export const summary =
-  "This smart contract is designed to be a Wrapped TRON (WTRX) contract. It allows users to deposit TRX (the native currency of the TRON blockchain) into the contract and receive WTRX tokens in return. These tokens represent the equivalent value of the deposited TRX and can be traded, transferred or held like any ERC20 token.\n\nThe contract is implemented through three individual files: token_deposit.sol, trc20.sol and wtrx.sol. The trc20.sol contract provides an API for tokens that comply with the TRC20 standard, which is similar to the more common ERC20 standard. The token_deposit.sol contract extends the trc20.sol contract and adds two additional functions: deposit() and withdraw(). The deposit() function allows users to send TRX to the contract and receive the equivalent amount of WTRX tokens in return. The withdraw() function allows users to redeem their WTRX tokens for TRX.\n\nThe final contract, wtrx.sol, is the implementation of the actual WTRX token. It imports the token_deposit.sol contract and adds the necessary variables and functions to define the parameters of WTRX. This includes variables like the name, symbol, and number of decimals. It also defines the deposit() and withdraw() functions from the parent contract and adds four events: Approval, Transfer, Deposit, and Withdrawal.\n\nIn summary, this smart contract provides a way for TRON users to trade and hold TRX in the form of WTRX tokens, which can be used like any other ERC20 token. Other developers can use and interact with this contract by integrating it into their own applications, such as decentralized exchanges or wallets that support TRON.";
+  'This smart contract is designed to be a Wrapped Binance Coin (WBNB) token on the Binance Smart Chain. It is an ERC20-compliant token that represents Binance Coin (BNB) on a one-to-one basis, allowing users to interact with decentralized applications (dApps) and smart contracts that require ERC20 tokens. WBNB is useful because it enables BNB holders to participate in the growing DeFi ecosystem on Binance Smart Chain. \n\nIn the given code, the most important aspects of the smart contract are as follows:\n\n1. The contract initializes the name, symbol, and decimals of the token, which are "Wrapped BNB", "WBNB", and 18 respectively.\n\n2. The `balanceOf` mapping keeps track of the token balance of each user\'s address. The `allowance` mapping holds the approved token allowance that can be spent by another address on behalf of the token owner.\n\n3. The smart contract accepts BNB deposits as tokens through the fallback function and the `deposit()` function, which are automatically called when users send BNB to the contract\'s address.\n\n4. Users can withdraw their BNB from the contract using the `withdraw()` function, which checks if the user has a sufficient WBNB balance before sending the corresponding BNB amount back to them.\n\n5. The`totalSupply()` function returns the total BNB balance of the smart contract, representing all the WBNB tokens in circulation.\n\n6. The `approve()` function allows a user to approve another address to spend their WBNB tokens up to a specified amount.\n\n7. `transfer()` and `transferFrom()` functions are provided for transferring WBNB between addresses. The `transfer()` function transfers tokens from the sender to a specified address, while the `transferFrom()` function transfers an approved amount of tokens from one address to another.\n\nIn conclusion, this smart contract allows Binance Coin holders to convert their BNB into Wrapped BNB (WBNB) tokens, which they can then use to interact with decentralized applications and smart contracts on the Binance Smart Chain. Other developers can interact with this smart contract to incorporate its functionalities into their dApps or build an ecosystem around the use of WBNB tokens.';
 
 export const interaction =
-  "To interact with the methods of the WTRX smart contract using tronweb, you can follow the sample code snippets below:\n\n1. Get the total supply of WTRX tokens\n\n```javascript\nconst wtrxAddress = 'WTRX_CONTRACT_ADDRESS';\nconst wtrxContract = await tronWeb.contract().at(wtrxAddress);\nconst totalSupply = await wtrxContract.totalSupply().call();\nconsole.log('Total supply of WTRX tokens:', toNumber(totalSupply));\n```\n\n2. Get the balance of a user's WTRX tokens\n\n```javascript\nconst userAddress = 'USER_ADDRESS';\nconst wtrxAddress = 'WTRX_CONTRACT_ADDRESS';\nconst wtrxContract = await tronWeb.contract().at(wtrxAddress);\nconst userBalance = await wtrxContract.balanceOf(userAddress).call();\nconsole.log(`User's balance of WTRX tokens:`, toNumber(userBalance));\n```\n\n3. Approve another address to spend a specified amount of WTRX tokens on behalf of the user\n\n```javascript\nconst spenderAddress = 'SPENDER_ADDRESS';\nconst amount = 100;\nconst wtrxAddress = 'WTRX_CONTRACT_ADDRESS';\nconst wtrxContract = await tronWeb.contract().at(wtrxAddress);\nconst approveTx = await wtrxContract.approve(spenderAddress, amount).send({\n    from: 'USER_ADDRESS',\n    feeLimit: 100000000 // optional\n});\nconsole.log('Approved transaction ID:', approveTx);\n```\n\n4. Transfer WTRX tokens from the user's account to another address\n\n```javascript\nconst recipientAddress = 'RECIPIENT_ADDRESS';\nconst amount = 100;\nconst wtrxAddress = 'WTRX_CONTRACT_ADDRESS';\nconst wtrxContract = await tronWeb.contract().at(wtrxAddress);\nconst transferTx = await wtrxContract.transfer(recipientAddress, amount).send({\n    from: 'USER_ADDRESS',\n    feeLimit: 100000000 // optional\n});\nconsole.log('Transfer transaction ID:', transferTx);\n```\n\n5. Transfer WTRX tokens from one address to another address, on behalf of the user (requires approval)\n\n```javascript\nconst payerAddress = 'PAYER_ADDRESS';\nconst recipientAddress = 'RECIPIENT_ADDRESS';\nconst amount = 100;\nconst wtrxAddress = 'WTRX_CONTRACT_ADDRESS';\nconst wtrxContract = await tronWeb.contract().at(wtrxAddress);\nconst allowance = await wtrxContract.allowance(payerAddress, 'USER_ADDRESS').call();\nif (allowance < amount) {\n    throw new Error('Not enough allowance');\n}\nconst transferFromTx = await wtrxContract.transferFrom(payerAddress, recipientAddress, amount).send({\n    from: 'USER_ADDRESS',\n    feeLimit: 100000000 // optional\n});\nconsole.log('Transfer-from transaction ID:', transferFromTx);\n```";
+  "1. Get the total supply of WBNB tokens\n```javascript\nconst wbnbContract = await ethers.getContractAt('WBNB', 'WBNB_CONTRACT_ADDRESS');\nconst totalSupply = await wbnbContract.totalSupply();\nconsole.log(`Total supply of WBNB tokens:`, ethers.utils.formatUnits(totalSupply, 'ether'));\n```\n\n2. Get the balance of a user's WBNB tokens\n```javascript\nconst userAddress = 'USER_ADDRESS';\nconst userBalance = await wbnbContract.balanceOf(userAddress);\nconsole.log(`User's balance of WBNB tokens:`, ethers.utils.formatUnits(userBalance, 'ether'));\n```\n\n3. Deposit BNB to get WBNB tokens\n```javascript\nconst depositAmount = ethers.utils.parseUnits('1', 'ether');\nawait wbnbContract.deposit({ value: depositAmount });\n```\n\n4. Withdraw WBNB to get BNB tokens\n```javascript\nconst withdrawAmount = ethers.utils.parseUnits('1', 'ether');\nawait wbnbContract.withdraw(withdrawAmount);\n```\n\n5. Approve an address to spend WBNB tokens\n```javascript\nconst spender = 'SPENDER_ADDRESS';\nconst approveAmount = ethers.utils.parseUnits('5', 'ether');\nawait wbnbContract.approve(spender, approveAmount);\n```\n\n6. Transfer WBNB tokens to another address\n```javascript\nconst recipient = 'RECIPIENT_ADDRESS';\nconst transferAmount = ethers.utils.parseUnits('2', 'ether');\nawait wbnbContract.transfer(recipient, transferAmount);\n```\n\n7. Transfer WBNB tokens from an approved address to another address\n```javascript\nconst src = 'SRC_ADDRESS';\nconst dst = 'DST_ADDRESS';\nconst transferAmount = ethers.utils.parseUnits('1', 'ether');\nawait wbnbContract.transferFrom(src, dst, transferAmount);\n```";
+
+export const wagmi =
+  "1. Get the total supply of WBNB tokens\n```javascript\nconst { data: totalSupply } = useContractRead({\n    address: 'WBNB_CONTRACT_ADDRESS',\n    abi: WBNB.abi,\n    functionName: 'totalSupply'\n});\nconsole.log(`Total supply of WBNB tokens:`, totalSupply ? ethers.utils.formatUnits(totalSupply, 'ether') : 'Loading...');\n```\n\n2. Get the balance of a user's WBNB tokens\n```javascript\nconst userAddress = 'USER_ADDRESS';\nconst { data: userBalance } = useContractRead({\n    address: 'WBNB_CONTRACT_ADDRESS',\n    abi: WBNB.abi,\n    functionName: 'balanceOf',\n    args: [userAddress],\n});\n\nconsole.log(`User's balance of WBNB tokens:`, userBalance ? ethers.utils.formatUnits(userBalance, 'ether') : 'Loading...');\n```\n\n3. Approve a spender to use your WBNB tokens\n```javascript\nconst spender = 'SPENDER_ADDRESS';\nconst amountToAllow = ethers.utils.parseUnits('10', 'ether');\nconst { send: approveSpender } = useContractWrite({\n    address: 'WBNB_CONTRACT_ADDRESS',\n    abi: WBNB.abi,\n    functionName: 'approve',\n    args: [spender, amountToAllow],\n});\n\n// To send the approve transaction, call:\n// approveSpender();\n```\n\n4. Transfer WBNB tokens to another address\n```javascript\nconst destinationAddress = 'DESTINATION_ADDRESS';\nconst amountToTransfer = ethers.utils.parseUnits('5', 'ether');\nconst { send: transferTokens } = useContractWrite({\n    address: 'WBNB_CONTRACT_ADDRESS',\n    abi: WBNB.abi,\n    functionName: 'transfer',\n    args: [destinationAddress, amountToTransfer],\n});\n\n// To send the transfer transaction, call:\n// transferTokens();\n```\n\n5. Deposit BNB into wrapped BNB contract\n```javascript\nconst amountToDeposit = ethers.utils.parseUnits('1', 'ether');\nconst { send: deposit } = useContractWrite({\n    address: 'WBNB_CONTRACT_ADDRESS',\n    abi: WBNB.abi,\n    functionName: 'deposit',\n    etherValue: amountToDeposit,\n});\n\n// To send the deposit transaction, call:\n// deposit();\n```\n\n6. Withdraw BNB from the wrapped BNB contract\n```javascript\nconst amountToWithdraw = ethers.utils.parseUnits('1', 'ether');\nconst { send: withdraw } = useContractWrite({\n    address: 'WBNB_CONTRACT_ADDRESS',\n    abi: WBNB.abi,\n    functionName: 'withdraw',\n    args: [amountToWithdraw],\n});\n\n// To send the withdraw transaction, call:\n// withdraw();\n```";
 
 export const metadata = {
-  totalAssets: 18237100512.396912,
-  txnCount: 98681,
-  contractName: "WTRX",
-  createdOn: "2020-04-03 03:53:42 (Local)",
-  creator: "TG6jUMfwpwR9QNFsSwCGtLaV2TR2g",
+  totalAssets: 981593689.12,
+  txnCount: 7027421,
+  contractName: "WBNB",
+  createdOn: "Sep-03-2020 07:53:04 AM +UTC",
+  creator: abridgeAddress("0x4e656459ed25bf986eea1196bc1b00665401645d", 6),
 };
 
 export const methods = [
@@ -36,37 +39,34 @@ export const methodMap = {
 
 export const tokenBalances = [
   {
-    name: "TRX (TRX)",
+    name: "BNB",
     value: 18237089384.965828,
-    fiatValue: 1214354499.14,
-    imageUrl:
-      "https://static.tronscan.org/production/upload/logo/TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR.png?t=1598430824415",
+    fiatValue: 981593689.12,
+    imageUrl: "https://bscscan.com/token/images/binance_32.png",
   },
   {
-    name: "BitTorrent Old (BTTOLD)",
+    name: "Wrapped BNB (WBNB)",
     value: 787756.064509,
-    fiatValue: 577.16,
-    imageUrl: "https://static.tronscan.org/production/logo/1002000.png",
+    fiatValue: 367783.69,
+    imageUrl: "https://bscscan.com/token/images/binance_32.png",
   },
   {
-    name: "Tether USD (USDT)",
-    value: 105.28249,
+    name: "Binance-Peg (BUSD)",
+    value: 10850.15,
     fiatValue: 105.3,
-    imageUrl: "https://static.tronscan.org/production/logo/usdtlogo.png",
+    imageUrl: "https://bscscan.com/token/images/busd_32_2.png",
   },
   {
-    name: "Wrapped TRX (WTRX)",
-    value: 633.203197,
+    name: "QUINT (QUINT)",
+    value: 4040.82,
     fiatValue: 42.16,
-    imageUrl:
-      "https://static.tronscan.org/production/upload/logo/TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR.png?t=1598430824415",
+    imageUrl: "https://bscscan.com/token/images/quint_32.png",
   },
   {
-    name: "Bitcoin (BTC)",
-    value: 0.00009296,
+    name: "Binance_Peg (BSC-USD)",
+    value: 3645.75,
     fiatValue: 2.58,
-    imageUrl:
-      "https://static.tronscan.org/production/logo/TN3W4H6rK2ce4vX9YnFQHwKENnHjoxb3m9.png",
+    imageUrl: "https://bscscan.com/token/images/busdt_32.png",
   },
 ];
 
@@ -206,3 +206,13 @@ export const abi = {
     },
   ],
 };
+
+export function abridgeAddress(address: string, char?: number) {
+  if (!char) char = 4;
+  const l = address.length;
+  if (l < 20) return address;
+  return `${address.substring(0, 2 + char)}...${address.substring(
+    l - char,
+    l
+  )}`;
+}
