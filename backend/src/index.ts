@@ -2,10 +2,7 @@ import * as dotenv from "dotenv";
 import cors from "cors";
 import helmet from "helmet";
 import express, { Request, Response, Express } from "express";
-import { chatRouter } from "./routes/chat.router";
-import { startBrowser } from "./browser";
 import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
-import jsonminify from "jsonminify";
 import fs from "fs";
 import axios from "axios";
 
@@ -32,22 +29,23 @@ const BSC_API_KEY = process.env.BSCSCAN_API_KEY ?? "";
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
-app.use("/api/chat", chatRouter);
 
 function removeComments(code: string): string {
-  // Remove all multi-line comments
   let result = code.replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, "");
-  // Remove all single line comments
   result = result.replace(/\/\/.*/g, "");
   return result;
 }
 
-app.get("/contract", async (req, res) => {
+app.get("/contract/:address", async (req: Request, res: Response) => {
+  const { address } = req.params;
+  console.log("request received for ", address);
+
   const response = await axios.get(
-    `https://api.bscscan.com/api?module=contract&action=getsourcecode&address=0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c&apikey=${BSC_API_KEY}`
+    `https://api.bscscan.com/api?module=contract&action=getsourcecode&address=${address}&apikey=${BSC_API_KEY}`
   );
 
   const contractCode = removeComments(response.data.result[0].SourceCode);
+  console.log("code fetched");
 
   const contractMessages: ChatCompletionRequestMessage[] = [
     {
@@ -57,7 +55,7 @@ app.get("/contract", async (req, res) => {
   ];
 
   // summary
-  const completion1 = await openai.createChatCompletion({
+  const summaryResponse = await openai.createChatCompletion({
     model: "gpt-4",
     messages: [
       {
@@ -69,8 +67,10 @@ app.get("/contract", async (req, res) => {
     ],
   });
 
+  console.log("summary fetched");
+
   // ethers
-  const completion2 = await openai.createChatCompletion({
+  const ethersResponse = await openai.createChatCompletion({
     model: "gpt-4",
     messages: [
       {
@@ -82,7 +82,10 @@ app.get("/contract", async (req, res) => {
     ],
   });
 
-  const completion = await openai.createChatCompletion({
+  console.log("ethers fetched");
+
+  // wagmi
+  const wagmiResponse = await openai.createChatCompletion({
     model: "gpt-4",
     messages: [
       {
@@ -94,21 +97,27 @@ app.get("/contract", async (req, res) => {
     ],
   });
 
-  const outputFile = "wrapped_bnb_wagmi.json";
+  console.log("wagmi fetched");
 
-  fs.writeFile(
-    outputFile,
-    JSON.stringify(completion.data.choices[0], null, 2),
-    (err) => {
-      if (err) {
-        console.error("Error writing JSON file:", err);
-        // res.status(500).send("An error occurred while writing the JSON file.");
-      } else {
-        console.log(`JSON file saved as ${outputFile}`);
-        res.status(200).send(completion.data.choices[0].message!.content);
-      }
+  const outputFile = "output.json";
+
+  const results = {
+    summary: summaryResponse.data.choices[0].message!.content,
+    ethers: ethersResponse.data.choices[0].message!.content,
+    wagmi: wagmiResponse.data.choices[0].message!.content,
+  };
+
+  console.log("result sent");
+  res.status(200).send(results);
+
+  fs.writeFile(outputFile, JSON.stringify(results), (err) => {
+    if (err) {
+      console.error("Error writing JSON file:", err);
+      res.status(500).send("An error occurred while writing the JSON file.");
+    } else {
+      console.log(`JSON file saved as ${outputFile}`);
     }
-  );
+  });
 });
 
 app.listen(port, () => {

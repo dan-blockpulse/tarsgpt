@@ -2,16 +2,7 @@ import { HStack, VStack, Text, Box } from "@chakra-ui/react";
 import styles from "@styles/Main.module.css";
 import { CopyIcon } from "@chakra-ui/icons";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import {
-  abi,
-  interaction,
-  metadata,
-  methodMap,
-  methods,
-  summary,
-  tokenBalances,
-  wagmi,
-} from "@data/sample";
+import { abi, metadata, methodMap, methods, tokenBalances } from "@data/sample";
 import Highlight from "react-highlight";
 import { useToast, Link as ChakraLink, Image } from "@chakra-ui/react";
 import { useRouter } from "next/router";
@@ -25,16 +16,41 @@ export default function Main() {
   const router = useRouter();
   const { address } = router.query;
   const [isLoading, setIsLoading] = useState(true);
+  const [summary, setSummary] = useState("");
+  const [ethers, setEthers] = useState("");
+  const [wagmi, setWagmi] = useState("");
+
+  console.log("address from URL: ", address);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     if (summary) setIsLoading(false);
+  //   }, 30000);
+  //   return () => {
+  //     clearTimeout(timer);
+  //   };
+  // }, [address]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 30000); // 30 seconds
-
-    return () => {
-      clearTimeout(timer);
+    const fetchContractData = async () => {
+      try {
+        console.log("ADDRESS: ", address);
+        if (!address) return;
+        const response = await fetch(
+          `http://localhost:8000/contract/${address}`
+        );
+        const { summary, ethers, wagmi } = await response.json();
+        setSummary(summary);
+        setEthers(ethers);
+        setWagmi(wagmi);
+        setIsLoading(false);
+      } catch (err) {
+        console.error(err);
+        setIsLoading(false);
+      }
     };
-  }, []);
+
+    fetchContractData();
+  }, [address]);
 
   const copyToClipboard = async (
     text: string,
@@ -166,7 +182,7 @@ export default function Main() {
                     <Tab w="100%">wagmi.sh</Tab>
                   </TabList>
                   <TabPanels>
-                    <TabPanel>{formatCode(interaction)}</TabPanel>
+                    <TabPanel>{formatCode(ethers)}</TabPanel>
                     <TabPanel>{formatCode(wagmi)}</TabPanel>
                   </TabPanels>
                 </Tabs>
