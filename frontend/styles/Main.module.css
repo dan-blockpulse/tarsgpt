@@ -327,6 +327,16 @@
   color: #ffffff;
 }
 
+.loadingSubtext {
+  font-family: "Kanit";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 30px;
+
+  color: rgba(255, 255, 255, 0.4);
+}
+
 .sectionTitleContainer {
   padding: 1rem;
 }

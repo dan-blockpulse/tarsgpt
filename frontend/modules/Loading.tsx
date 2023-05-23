@@ -10,8 +10,8 @@ export default function Loading() {
   useEffect(() => {
     const timers = [
       setTimeout(() => setMessage("Transferring data to GPT"), 10000),
-      setTimeout(() => setMessage("Awaiting response from GPT"), 15000),
-      setTimeout(() => setMessage("Processing response from GPT"), 25000),
+      setTimeout(() => setMessage("Awaiting response from GPT"), 30000),
+      setTimeout(() => setMessage("Processing response from GPT"), 5000),
     ];
 
     return () => {
@@ -24,6 +24,9 @@ export default function Loading() {
       <main className={styles.main}>
         <LoadingLottie />
         <Text className={styles.loadingText}>{message}</Text>
+        <Text className={styles.loadingSubtext}>
+          This may take up to ~5 minutes to process.
+        </Text>
       </main>
       <Hero />
     </VStack>

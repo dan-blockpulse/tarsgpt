@@ -2,7 +2,7 @@ import { HStack, VStack, Text, Box } from "@chakra-ui/react";
 import styles from "@styles/Main.module.css";
 import { CopyIcon } from "@chakra-ui/icons";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { abi, metadata, methodMap, methods, tokenBalances } from "@data/sample";
+import { metadata, methodMap, methods, tokenBalances } from "@data/sample";
 import Highlight from "react-highlight";
 import { useToast, Link as ChakraLink, Image } from "@chakra-ui/react";
 import { useRouter } from "next/router";
@@ -10,6 +10,11 @@ import Navbar from "@modules/Navbar";
 import { useEffect, useState } from "react";
 import Loading from "@modules/Loading";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
+
+const API_URL =
+  process.env.API_ENV != "prod"
+    ? process.env.API_URL_DEV
+    : process.env.API_URL_PROD;
 
 export default function Main() {
   const toast = useToast();
@@ -19,29 +24,21 @@ export default function Main() {
   const [summary, setSummary] = useState("");
   const [ethers, setEthers] = useState("");
   const [wagmi, setWagmi] = useState("");
-
-  console.log("address from URL: ", address);
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     if (summary) setIsLoading(false);
-  //   }, 30000);
-  //   return () => {
-  //     clearTimeout(timer);
-  //   };
-  // }, [address]);
+  const [abi, setAbi] = useState("");
+  const [functions, setFunctions] = useState([]);
 
   useEffect(() => {
     const fetchContractData = async () => {
       try {
-        console.log("ADDRESS: ", address);
         if (!address) return;
-        const response = await fetch(
-          `http://localhost:8000/contract/${address}`
-        );
-        const { summary, ethers, wagmi } = await response.json();
+        const response = await fetch(`${API_URL}/contract/${address}`);
+        const { summary, ethers, wagmi, functions, abi } =
+          await response.json();
         setSummary(summary);
         setEthers(ethers);
         setWagmi(wagmi);
+        setFunctions(functions);
+        setAbi(abi);
         setIsLoading(false);
       } catch (err) {
         console.error(err);
@@ -187,12 +184,6 @@ export default function Main() {
                   </TabPanels>
                 </Tabs>
               </VStack>
-              {/* <VStack className={styles.contractLeftSubsection}>
-                <Text className={styles.sectionTitle}>
-                  Contract Interactions via Ethers.js
-                </Text>
-                {formatCode(interaction)}
-              </VStack> */}
             </VStack>
             <VStack w="30%" gap={1}>
               <VStack className={styles.contractRightSubsection}>
@@ -269,11 +260,17 @@ export default function Main() {
                     }
                   />
                 </HStack>
-                {Object.values(methodMap).map((method: string, idx) => (
-                  <Text key={idx} className={styles.method}>
-                    {idx + 1}. {method}
-                  </Text>
-                ))}
+                {address == "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+                  ? Object.values(methodMap).map((method: string, idx) => (
+                      <Text key={idx} className={styles.method}>
+                        {idx + 1}. {method}
+                      </Text>
+                    ))
+                  : functions.map((method, idx) => (
+                      <Text key={idx} className={styles.method}>
+                        {idx + 1}. {method}
+                      </Text>
+                    ))}
               </VStack>
             </VStack>
           </HStack>

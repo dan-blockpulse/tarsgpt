@@ -10,7 +10,7 @@ export const wagmi =
 export const metadata = {
   totalAssets: 981593689.12,
   txnCount: 7027421,
-  contractName: "WBNB",
+  contractName: "BNB",
   createdOn: "Sep-03-2020 07:53:04 AM +UTC",
   creator: abridgeAddress("0x4e656459ed25bf986eea1196bc1b00665401645d", 6),
 };
