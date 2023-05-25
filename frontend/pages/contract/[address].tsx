@@ -12,9 +12,9 @@ import Loading from "@modules/Loading";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 
 const API_URL =
-  process.env.API_ENV != "prod"
-    ? process.env.API_URL_DEV
-    : process.env.API_URL_PROD;
+  process.env.NEXT_PUBLIC_API_ENV != "prod"
+    ? process.env.NEXT_PUBLIC_API_URL_DEV
+    : process.env.NEXT_PUBLIC_API_URL_PROD;
 
 export default function Main() {
   const toast = useToast();
