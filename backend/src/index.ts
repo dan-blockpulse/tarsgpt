@@ -133,6 +133,7 @@ app.get("/contract/:address", async (req: Request, res: Response) => {
     ethers: ensureCodeBlock(ethersResponse.data.choices[0].message!.content),
     wagmi: ensureCodeBlock(wagmiResponse.data.choices[0].message!.content),
     functions: functionNames,
+    abi: abiResponse.data.result,
   };
 
   console.log("result sent");
