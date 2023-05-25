@@ -146,7 +146,7 @@ export default function Main() {
               />
             </VStack>
             <ChakraLink
-              href={`https://bscscan.com/address/${address}#code`}
+              href={`https://www.mintscan.io/evmos/evm/contract/${address}`}
               isExternal
             >
               <VStack className={styles.iconContainer}>
