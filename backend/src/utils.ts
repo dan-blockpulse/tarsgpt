@@ -46,6 +46,18 @@ function formatObject(obj: any) {
   return newObj;
 }
 
+export function ensureCodeBlock(str) {
+  const count = (str.match(/```/g) || []).length;
+  if (count % 2 !== 0) {
+    str += "```";
+  }
+  return str;
+}
+
+export function sleep(seconds: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+}
+
 export async function fetchContract(contractAddress: string) {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
@@ -83,10 +95,7 @@ export async function fetchContract(contractAddress: string) {
   console.log("METADATA:", metadata);
 
   const code = await page.evaluate(() => {
-    let codeElement = document.querySelector("code.hljs.php") as HTMLElement;
-    if (!codeElement) {
-      codeElement = document.querySelector("code.hljs.zephir") as HTMLElement;
-    }
+    let codeElement = document.querySelector("code.hljs") as HTMLElement;
     return codeElement ? codeElement.innerText : null;
   });
 

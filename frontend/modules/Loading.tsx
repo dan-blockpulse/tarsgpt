@@ -9,9 +9,8 @@ export default function Loading() {
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setMessage("Transferring data to GPT"), 10000),
-      setTimeout(() => setMessage("Awaiting response from GPT"), 30000),
-      setTimeout(() => setMessage("Processing response from GPT"), 5000),
+      setTimeout(() => setMessage("Transferring data to GPT"), 5000),
+      setTimeout(() => setMessage("Awaiting response from GPT"), 8000),
     ];
 
     return () => {

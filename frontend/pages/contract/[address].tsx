@@ -48,12 +48,22 @@ export default function Main() {
   const [functions, setFunctions] = useState([]);
   const [tokens, setTokens] = useState([]);
   const [metadata, setMetadata] = useState<MetadataType>({});
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchContractData = async () => {
       try {
         if (!address) return;
         const response = await fetch(`${API_URL}/contract/${address}`);
+
+        const data = await response.json();
+
+        if (data.error) {
+          console.log("here");
+          setError(true);
+          return;
+        }
+
         const {
           summary,
           ethers,
@@ -62,7 +72,7 @@ export default function Main() {
           abi,
           tokens,
           metadata: contractData,
-        } = await response.json();
+        } = data;
         setSummary(summary);
         setEthers(ethers);
         setWagmi(wagmi);
@@ -149,7 +159,22 @@ export default function Main() {
     return codeBlocks;
   };
 
-  if (!address) return <Text>Invalid address</Text>;
+  if (!address)
+    return (
+      <main className={styles.main}>
+        <Text color="white">Invalid EVMOS address, please try again.</Text>
+      </main>
+    );
+
+  if (error)
+    return (
+      <main className={styles.main}>
+        <Text color="white">
+          Failed to process request. Error: invalid number of tokens. Please try
+          again with a different contract.
+        </Text>
+      </main>
+    );
 
   if (!summary || !ethers || !wagmi || !abi) return <Loading />;
 
