@@ -54,7 +54,9 @@ export async function fetchContract(contractAddress: string) {
     { waitUntil: "networkidle2" }
   );
 
-  await page.waitForSelector(".InfoRow_container__2xTzg", { timeout: 5000 });
+  await page.waitForSelector(".InfoRow_container__2xTzg", {
+    timeout: parseInt(process.env.TIMEOUT ?? "10000"),
+  });
 
   const metadata = await page.evaluate(() => {
     const containers = Array.from(
@@ -102,7 +104,7 @@ export async function fetchContract(contractAddress: string) {
   });
 
   await page.waitForSelector(".ABIContent_abiContent__6HWYR", {
-    timeout: 5000,
+    timeout: parseInt(process.env.TIMEOUT ?? "10000"),
   });
 
   const abi = await page.evaluate(() => {

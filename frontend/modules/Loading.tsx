@@ -25,7 +25,7 @@ export default function Loading() {
         <LoadingLottie />
         <Text className={styles.loadingText}>{message}</Text>
         <Text className={styles.loadingSubtext}>
-          This may take up to ~5 minutes to process.
+          Due to GPT-4 API traffic, this may take up to ~10 minutes to process.
         </Text>
       </main>
       <Hero />
