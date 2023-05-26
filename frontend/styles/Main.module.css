@@ -184,7 +184,7 @@
 }
 
 .codeBackground {
-  background: linear-gradient(90deg, #ffdc71 0%, #f1b90c 100%);
+  background: linear-gradient(90deg, #f58774 0%, #ed4e33 100%);
   border-radius: 10px;
   padding: 0.5rem;
 }
@@ -232,7 +232,7 @@
 .ratioBar {
   position: absolute;
   height: 100%;
-  background-color: #f1b90c;
+  background-color: #ed4e33;
   border-radius: 10px;
 }
 

@@ -42,36 +42,31 @@ export const tokenBalances = [
     name: "EVMOS",
     value: 18237089384.965828,
     fiatValue: 981593689.12,
-    imageUrl:
-      "https://raw.githubusercontent.com/cosmos/chain-registry/master/evmos/images/evmos.png",
+    imageUrl: "",
   },
   {
-    name: "stEVMOS",
+    name: "Wrapped EVMOS (WEVMOS)",
     value: 787756.064509,
     fiatValue: 367783.69,
-    imageUrl:
-      "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stevmos.png",
+    imageUrl: "",
   },
   {
-    name: "stATOM",
+    name: "Evmos-Peg",
     value: 10850.15,
     fiatValue: 105.3,
-    imageUrl:
-      "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/statom.png",
+    imageUrl: "",
   },
   {
-    name: "axlUSDC",
+    name: "QUINT (QUINT)",
     value: 4040.82,
     fiatValue: 42.16,
-    imageUrl:
-      "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png",
+    imageUrl: "",
   },
   {
-    name: "axlWETH",
+    name: "Evmos_Peg",
     value: 3645.75,
     fiatValue: 2.58,
-    imageUrl:
-      "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png",
+    imageUrl: "",
   },
 ];
 

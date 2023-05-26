@@ -1,8 +1,17 @@
-import { HStack, VStack, Text, Box } from "@chakra-ui/react";
+import { HStack, VStack, Text, Box, Spinner } from "@chakra-ui/react";
 import styles from "@styles/Main.module.css";
 import { CopyIcon } from "@chakra-ui/icons";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { metadata, methodMap, methods, tokenBalances } from "@data/sample";
+import {
+  abi,
+  interaction,
+  metadata,
+  methodMap,
+  methods,
+  summary,
+  tokenBalances,
+  wagmi,
+} from "@data/sample";
 import Highlight from "react-highlight";
 import { useToast, Link as ChakraLink, Image } from "@chakra-ui/react";
 import { useRouter } from "next/router";
@@ -21,33 +30,33 @@ export default function Main() {
   const router = useRouter();
   const { address } = router.query;
   const [isLoading, setIsLoading] = useState(true);
-  const [summary, setSummary] = useState("");
-  const [ethers, setEthers] = useState("");
-  const [wagmi, setWagmi] = useState("");
-  const [abi, setAbi] = useState("");
-  const [functions, setFunctions] = useState([]);
+  // const [summary, setSummary] = useState("");
+  // const [ethers, setEthers] = useState("");
+  // const [wagmi, setWagmi] = useState("");
+  // const [abi, setAbi] = useState("");
+  // const [functions, setFunctions] = useState([]);
 
-  useEffect(() => {
-    const fetchContractData = async () => {
-      try {
-        if (!address) return;
-        const response = await fetch(`${API_URL}/contract/${address}`);
-        const { summary, ethers, wagmi, functions, abi } =
-          await response.json();
-        setSummary(summary);
-        setEthers(ethers);
-        setWagmi(wagmi);
-        setFunctions(functions);
-        setAbi(abi);
-        setIsLoading(false);
-      } catch (err) {
-        console.error(err);
-        setIsLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchContractData = async () => {
+  //     try {
+  //       if (!address) return;
+  //       const response = await fetch(`${API_URL}/contract/${address}`);
+  //       const { summary, ethers, wagmi, functions, abi } =
+  //         await response.json();
+  //       setSummary(summary);
+  //       setEthers(ethers);
+  //       setWagmi(wagmi);
+  //       setFunctions(functions);
+  //       setAbi(abi);
+  //       setIsLoading(false);
+  //     } catch (err) {
+  //       console.error(err);
+  //       setIsLoading(false);
+  //     }
+  //   };
 
-    fetchContractData();
-  }, [address]);
+  //   fetchContractData();
+  // }, [address]);
 
   const copyToClipboard = async (
     text: string,
@@ -121,7 +130,9 @@ export default function Main() {
 
   if (!address) return <Text>Invalid address</Text>;
 
-  if (isLoading) return <Loading />;
+  console.log(methods);
+  if (!summary || !interaction || !wagmi || !abi) return <Spinner />;
+  // return <Loading />;
 
   return (
     <VStack>
@@ -179,7 +190,7 @@ export default function Main() {
                     <Tab w="100%">wagmi.sh</Tab>
                   </TabList>
                   <TabPanels>
-                    <TabPanel>{formatCode(ethers)}</TabPanel>
+                    <TabPanel>{formatCode(interaction)}</TabPanel>
                     <TabPanel>{formatCode(wagmi)}</TabPanel>
                   </TabPanels>
                 </Tabs>
@@ -190,7 +201,7 @@ export default function Main() {
                 <Text className={styles.sectionTitle}>Contract Info</Text>
                 <HStack>
                   <Text>· Total assets: </Text>
-                  <Text>{metadata.totalAssets} TRX</Text>
+                  <Text>{metadata.totalAssets} BNB</Text>
                 </HStack>
                 <HStack>
                   <Text>· Transaction count: </Text>
@@ -229,7 +240,7 @@ export default function Main() {
               <VStack className={styles.contractRightSubsection}>
                 <Text className={styles.sectionTitle}>Contract Calls</Text>
                 <Text fontWeight={600}>Top 5 Methods</Text>
-                {methods.map(({ name, percentage }, idx) => (
+                {/* {methods.map(({ name, percentage }, idx) => (
                   <HStack
                     key={`method-${idx}`}
                     w="100%"
@@ -244,7 +255,7 @@ export default function Main() {
                     </Box>
                     <Text pl="10px">{percentage}%</Text>
                   </HStack>
-                ))}
+                ))} */}
               </VStack>
               <VStack className={styles.contractRightSubsection}>
                 <HStack w="100%" justifyContent="space-between">
@@ -266,9 +277,9 @@ export default function Main() {
                         {idx + 1}. {method}
                       </Text>
                     ))
-                  : functions.map((method, idx) => (
+                  : methods.map(({ name }, idx) => (
                       <Text key={idx} className={styles.method}>
-                        {idx + 1}. {method}
+                        {idx + 1}. {name}
                       </Text>
                     ))}
               </VStack>
