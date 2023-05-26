@@ -47,10 +47,7 @@ function formatObject(obj: any) {
 }
 
 export async function fetchContract(contractAddress: string) {
-  const browser = await puppeteer.launch({
-    executablePath: process.env.CHROMIUM_PATH,
-    args: ["--no-sandbox"], // This was important. Can't remember why
-  });
+  const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto(
     `https://www.mintscan.io/evmos/evm/contract/${contractAddress}`,
