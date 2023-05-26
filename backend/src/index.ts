@@ -71,6 +71,8 @@ app.get("/contract/:address", async (req: Request, res: Response) => {
 
   const response = await fetchContract(address);
 
+  console.log("after fetchContract");
+
   const contractMessages: ChatCompletionRequestMessage[] = [
     {
       role: "user",

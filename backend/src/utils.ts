@@ -80,7 +80,7 @@ export async function fetchContract(contractAddress: string) {
   });
 
   const formattedMetadata = formatObject(metadata);
-  // console.log(metadata);
+  console.log("METADATA:", metadata);
 
   const code = await page.evaluate(() => {
     let codeElement = document.querySelector("code.hljs.php") as HTMLElement;
@@ -92,7 +92,7 @@ export async function fetchContract(contractAddress: string) {
 
   const codeMinified = removeComments(code).replace(/\s+/g, " ").trim();
 
-  // console.log(codeMinified);
+  console.log("CODE: ", codeMinified);
 
   await page.$$eval("button", (buttons) => {
     for (let button of buttons) {
@@ -160,6 +160,7 @@ export async function fetchContract(contractAddress: string) {
     .map((item) => item.name);
 
   const abiMinified = JSON.stringify(abi);
+  console.log("ABI: ", abiMinified);
 
   await browser.close();
 
