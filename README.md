@@ -29,7 +29,7 @@ TARS is an application designed to interpret blockchain data, particularly smart
 - Add more features to contract interpretation like assessing vulnerabilities in the contract logic
 
 ## How to test
-1. Go to [tarsgpt.app](https://tarsgpt.app)
+1. Go to [tarsgpt.app](https://tarsgpt.vercel.app/)
 2. Search for a verified, digestible contract on the EVMOS. Some good examples:
    1. Wrapped EVMOS Contract: [0xD4949664cD82660AaE99bEdc034a0deA8A0bd517](https://www.mintscan.io/evmos/evm/contract/0xD4949664cD82660AaE99bEdc034a0deA8A0bd517)
 3. See TARS interpretation of contract
