@@ -5,6 +5,10 @@ import express, { Request, Response, Express } from "express";
 import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
 import fs from "fs";
 import axios from "axios";
+import { abi, interaction, methods, summary, wagmi } from "../data/sample";
+import { fetchContract } from "./utils";
+import output from "../output.json";
+import { ethers } from "ethers";
 
 dotenv.config();
 
@@ -55,27 +59,22 @@ function extractFunctionNames(abiJson: string): string[] {
   return functionNames;
 }
 
+app.get("/", async (req: Request, res: Response) => {
+  console.log("request received");
+
+  res.status(200).send("hi");
+});
+
 app.get("/contract/:address", async (req: Request, res: Response) => {
   const { address } = req.params;
   console.log("request received for ", address);
 
-  const response = await axios.get(
-    `https://api.mintscan.com/api?module=contract&action=getsourcecode&address=${address}&apikey=${""}`
-  );
-
-  const abiResponse = await axios.get(
-    `https://api.mintscan.com/api?module=contract&action=getabi&&address=${address}&apikey=${""}`
-  );
-
-  const contractCode = removeComments(response.data.result[0].SourceCode);
-  console.log("code fetched");
-
-  const functionNames = extractFunctionNames(abiResponse.data.result);
+  const response = await fetchContract(address);
 
   const contractMessages: ChatCompletionRequestMessage[] = [
     {
       role: "user",
-      content: `Here is the solidity code for a smart contract on the EVMOS: ${contractCode}.`,
+      content: `Here is the solidity code for a smart contract on the EVMOS: ${response.code}.`,
     },
   ];
 
@@ -101,7 +100,7 @@ app.get("/contract/:address", async (req: Request, res: Response) => {
       {
         role: "system",
         content:
-          "I want you to act as an expert Ethereum dapp developer. I will give you the solidity code of a smart contract deployed on the EVMOS. You will provide code samples to a new developer on EVMOS how to interact with the most important methods on the smart contract using hardhat. Don't say any introductory statements like `Sure, I can provide code samples...` and get straight into the content. Please format it like this example response: '1. Get the total supply of WBNB tokens```javascriptconst wbnbContract = await ethers.getContractAt('WBNB', 'WBNB_CONTRACT_ADDRESS');\nconst totalSupply = await wbnbContract.totalSupply();\nconsole.log(`Total supply of WBNB tokens:`, ethers.utils.formatUnits(totalSupply, 'ether'));\n\n```2. Get the balance of a user's WBNB tokens```javascriptconst userAddress = 'USER_ADDRESS';\nconst userBalance = await wbnbContract.balanceOf(userAddress);\nconsole.log(`User's balance of WBNB tokens:`, ethers.utils.formatUnits(userBalance, 'ether'));\n\n```...",
+          "I want you to act as an expert Ethereum dapp developer. I will give you the solidity code of a smart contract deployed on the EVMOS. You will provide code samples to a new developer on EVMOS how to interact with the most important methods on the smart contract using hardhat. Don't say any introductory statements like `Sure, I can provide code samples...` and get straight into the content. Please format it like this example response: '1. Get the total supply of WEVMOS tokens```javascriptconst WEVMOSContract = await ethers.getContractAt('WEVMOS', 'WEVMOS_CONTRACT_ADDRESS');\nconst totalSupply = await WEVMOSContract.totalSupply();\nconsole.log(`Total supply of WEVMOS tokens:`, ethers.utils.formatUnits(totalSupply, 'ether'));\n\n```2. Get the balance of a user's WEVMOS tokens```javascriptconst userAddress = 'USER_ADDRESS';\nconst userBalance = await WEVMOSContract.balanceOf(userAddress);\nconsole.log(`User's balance of WEVMOS tokens:`, ethers.utils.formatUnits(userBalance, 'ether'));\n\n```...",
       },
       ...contractMessages,
     ],
@@ -116,12 +115,38 @@ app.get("/contract/:address", async (req: Request, res: Response) => {
       {
         role: "system",
         content:
-          "I want you to act as an expert Ethereum dapp developer. I will give you the solidity code of a smart contract deployed on the EVMOS. You will provide code samples to a new developer on EVMOS how to interact with the most important methods on the smart contract using wagmi.sh. Don't say any introductory statements like `Sure, I can provide code samples...` and get straight into the content. Please format it like this example response: '1. Get the total supply of WBNB tokens```javascriptconst { data: totalSupply } = useContractRead({\n    address: 'WBNB_CONTRACT_ADDRESS',\n    abi: WBNB.abi,\n    functionName: 'totalSupply'\n});\nconsole.log(`Total supply of WBNB tokens:`, totalSupply ? ethers.utils.formatUnits(totalSupply, 'ether') : 'Loading...');\n\n```2. Get the balance of a user's WBNB tokens```javascriptconst userAddress = 'USER_ADDRESS';\nconst { data: userBalance } = useContractRead({\n    address: 'WBNB_CONTRACT_ADDRESS',\n    abi: WBNB.abi,\n    functionName: 'balanceOf',\n    args: [userAddress],\n});\n\nconsole.log(`User's balance of WBNB tokens:`, userBalance ? ethers.utils.formatUnits(userBalance, 'ether') : 'Loading...');n\n```...",
+          "I want you to act as an expert Ethereum dapp developer. I will give you the solidity code of a smart contract deployed on the EVMOS. You will provide code samples to a new developer on EVMOS how to interact with the most important methods on the smart contract using https://wagmi.sh/. Don't say any introductory statements like `Sure, I can provide code samples...` and get straight into the content. Please format it like this example response: '1. Get the total supply of WEVMOS tokens\n```javascript\nconst { data: totalSupply } = useContractRead({\n    address: 'WEVMOS_CONTRACT_ADDRESS',\n    abi: WEVMOS.abi,\n    functionName: 'totalSupply'\n});\nconsole.log(`Total supply of WEVMOS tokens:`, totalSupply ? ethers.utils.formatUnits(totalSupply, 'ether') : 'Loading...');\n\n```3. Approve a spender to use your WEVMOS tokens\n```javascript\nconst spender = 'SPENDER_ADDRESS';\nconst amountToAllow = ethers.utils.parseUnits('10', 'ether');\nconst { send: approveSpender } = useContractWrite({\n    address: 'WEVMOS_CONTRACT_ADDRESS',\n    abi: WEVMOS.abi,\n    functionName: 'approve',\n    args: [spender, amountToAllow],\n});\n\n// To send the approve transaction, call:\n// approveSpender();\n\n```...",
       },
       ...contractMessages,
     ],
   });
 
+  const apiKey = process.env.COVALENT_API_KEY || "";
+
+  const url = `https://api.covalenthq.com/v1/evmos-mainnet/address/${address}/balances_v2/?key=${apiKey}`;
+
+  const resp = await axios.get(url);
+  const { data } = await resp.data;
+  const tokens = data.items;
+
+  const formattedTokens = tokens
+    .filter((t) => t.type !== "dust")
+    .map(({ contract_ticker_symbol, balance, pretty_quote, logo_url }) => {
+      return {
+        name: contract_ticker_symbol,
+        value: ethers.utils.formatUnits(balance, "ether"),
+        fiatValue: pretty_quote,
+        imageUrl: logo_url,
+      };
+    });
+
+  const newOutput = {
+    ...output,
+    tokens: formattedTokens,
+    metadata: response.metadata,
+    abi: response.abi,
+    functions: response.functionNames,
+  };
   console.log("wagmi fetched");
 
   const outputFile = "output.json";
@@ -130,12 +155,13 @@ app.get("/contract/:address", async (req: Request, res: Response) => {
     summary: summaryResponse.data.choices[0].message!.content,
     ethers: ensureCodeBlock(ethersResponse.data.choices[0].message!.content),
     wagmi: ensureCodeBlock(wagmiResponse.data.choices[0].message!.content),
-    functions: functionNames,
-    abi: abiResponse.data.result,
+    tokens: formattedTokens,
+    metadata: response.metadata,
+    abi: response.abi,
+    functions: response.functionNames,
   };
 
-  console.log("result sent");
-  res.status(200).send(results);
+  // console.log(response);
 
   fs.writeFile(outputFile, JSON.stringify(results), (err) => {
     if (err) {
@@ -145,6 +171,7 @@ app.get("/contract/:address", async (req: Request, res: Response) => {
       console.log(`JSON file saved as ${outputFile}`);
     }
   });
+  res.status(200).send(results);
 });
 
 app.listen(port, () => {

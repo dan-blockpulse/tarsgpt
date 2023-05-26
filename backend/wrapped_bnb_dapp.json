@@ -1,8 +1,0 @@
-{
-  "message": {
-    "role": "assistant",
-    "content": "1. Get the total supply of WBNB tokens\n```javascript\nconst wbnbContract = await ethers.getContractAt('WBNB', 'WBNB_CONTRACT_ADDRESS');\nconst totalSupply = await wbnbContract.totalSupply();\nconsole.log(`Total supply of WBNB tokens:`, ethers.utils.formatUnits(totalSupply, 'ether'));\n```\n\n2. Get the balance of a user's WBNB tokens\n```javascript\nconst userAddress = 'USER_ADDRESS';\nconst userBalance = await wbnbContract.balanceOf(userAddress);\nconsole.log(`User's balance of WBNB tokens:`, ethers.utils.formatUnits(userBalance, 'ether'));\n```\n\n3. Deposit BNB to get WBNB tokens\n```javascript\nconst depositAmount = ethers.utils.parseUnits('1', 'ether');\nawait wbnbContract.deposit({ value: depositAmount });\n```\n\n4. Withdraw WBNB to get BNB tokens\n```javascript\nconst withdrawAmount = ethers.utils.parseUnits('1', 'ether');\nawait wbnbContract.withdraw(withdrawAmount);\n```\n\n5. Approve an address to spend WBNB tokens\n```javascript\nconst spender = 'SPENDER_ADDRESS';\nconst approveAmount = ethers.utils.parseUnits('5', 'ether');\nawait wbnbContract.approve(spender, approveAmount);\n```\n\n6. Transfer WBNB tokens to another address\n```javascript\nconst recipient = 'RECIPIENT_ADDRESS';\nconst transferAmount = ethers.utils.parseUnits('2', 'ether');\nawait wbnbContract.transfer(recipient, transferAmount);\n```\n\n7. Transfer WBNB tokens from an approved address to another address\n```javascript\nconst src = 'SRC_ADDRESS';\nconst dst = 'DST_ADDRESS';\nconst transferAmount = ethers.utils.parseUnits('1', 'ether');\nawait wbnbContract.transferFrom(src, dst, transferAmount);\n```"
-  },
-  "finish_reason": "stop",
-  "index": 0
-}
